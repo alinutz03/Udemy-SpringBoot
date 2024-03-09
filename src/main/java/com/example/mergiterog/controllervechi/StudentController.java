@@ -1,8 +1,7 @@
-package com.example.mergiterog.controller;
+package com.example.mergiterog.controllervechi;
 
 
 import com.example.mergiterog.bean.Student;
-import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
