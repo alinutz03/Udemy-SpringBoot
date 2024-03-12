@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="comments")
+@Table(name = "comments")
 public class Comment {
 
     @Id
@@ -25,7 +25,7 @@ public class Comment {
     @Column(name = "body")
     private String body;
 
-    @ManyToOne
-    @JoinColumn(name="post_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 }
