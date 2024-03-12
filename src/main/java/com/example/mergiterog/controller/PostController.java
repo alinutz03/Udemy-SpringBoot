@@ -5,6 +5,7 @@ import com.example.mergiterog.payload.PostDto;
 import com.example.mergiterog.payload.PostResponse;
 import com.example.mergiterog.service.PostService;
 import com.example.mergiterog.util.AppConstants;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class PostController {
 
     // create blog post
     @PostMapping()
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
 
     }
@@ -47,7 +48,7 @@ public class PostController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable(name = "id") long id) {
+    public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable(name = "id") long id) {
         PostDto post = postService.updatePost(postDto, id);
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
