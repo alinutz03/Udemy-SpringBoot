@@ -1,5 +1,6 @@
 package com.example.mergiterog.controller;
 
+import com.example.mergiterog.payload.JWTAuthResponse;
 import com.example.mergiterog.payload.LoginDto;
 import com.example.mergiterog.service.AuthService;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,10 @@ public class AuthController {
 
     // Build Login REST API
     @PostMapping(value = {"/login", "/signin"})
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
-        String response = authService.login(loginDto);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<JWTAuthResponse> login(@RequestBody LoginDto loginDto) {
+        String token = authService.login(loginDto);
+        JWTAuthResponse jwtAuthResponse = new JWTAuthResponse();
+        jwtAuthResponse.setAccessToken(token);
+        return ResponseEntity.ok(jwtAuthResponse);
     }
 }

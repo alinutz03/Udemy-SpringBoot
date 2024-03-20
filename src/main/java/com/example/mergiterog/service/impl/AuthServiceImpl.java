@@ -34,6 +34,8 @@ public class AuthServiceImpl implements AuthService {
     public String login(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsernameOrEmail(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "User Logged-in successfully!";
+
+        String token = jwtTokenProvider.generateToken(authentication);
+        return token;
     }
 }
