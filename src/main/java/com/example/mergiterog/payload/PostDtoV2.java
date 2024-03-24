@@ -1,18 +1,15 @@
 package com.example.mergiterog.payload;
 
-import com.example.mergiterog.controller.CommentController;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
-@Schema(
-        description = "Post DTOModel Information"
-)
-public class PostDto {
+public class PostDtoV2 {
     private long id;
 
     @Schema(
@@ -40,4 +37,5 @@ public class PostDto {
             description = "Blog Post Catgeory id"
     )
     private Long categoryId;
+    private List<String> tags;
 }

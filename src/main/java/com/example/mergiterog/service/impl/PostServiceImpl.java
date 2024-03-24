@@ -1,9 +1,11 @@
 package com.example.mergiterog.service.impl;
 
+import com.example.mergiterog.entity.Category;
 import com.example.mergiterog.entity.Post;
 import com.example.mergiterog.exception.ResourceNotFoundException;
 import com.example.mergiterog.payload.PostDto;
 import com.example.mergiterog.payload.PostResponse;
+import com.example.mergiterog.repository.CategoryRepository;
 import com.example.mergiterog.repository.PostRepository;
 import com.example.mergiterog.service.PostService;
 import org.modelmapper.ModelMapper;
@@ -21,15 +23,22 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
     private ModelMapper mapper;
+    private CategoryRepository categoryRepository;
 
-    public PostServiceImpl(PostRepository postRepository, ModelMapper mapper) {
+    public PostServiceImpl(PostRepository postRepository, ModelMapper mapper, CategoryRepository categoryRepository) {
         this.postRepository = postRepository;
         this.mapper = mapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
     public PostDto createPost(PostDto postDto) {
+
+        Category category = categoryRepository.findById(postDto.getCategoryId()).
+                orElseThrow(() -> new ResourceNotFoundException("Category", "id", postDto.getCategoryId()));
+
         Post post = mapToEntity(postDto);
+        post.setCategory(category);
         Post newPost = postRepository.save(post);
         PostDto postResponse = mapToDto(post);
         return postResponse;
@@ -38,7 +47,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
-         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Post> posts = postRepository.findAll((org.springframework.data.domain.Pageable) pageable);
@@ -64,7 +73,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto updatePost(PostDto postDto, long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+
+        Category category = categoryRepository.findById(postDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postDto.getId()));
+
+        post.setCategory(category);
         post.setTitle(postDto.getTitle());
         post.setDescription(postDto.getDescription());
         post.setContent(postDto.getContent());
@@ -78,9 +94,17 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
     }
 
+    @Override
+    public List<PostDto> getPostByCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
+        List<Post> posts = postRepository.findByCategoryId(categoryId);
+        return posts.stream().map((post) -> mapToDto(post)).collect(Collectors.toList());
+    }
+
     // Convert Entity into DTO
     private PostDto mapToDto(Post post) {
-          PostDto postDto = mapper.map(post, PostDto.class);
+        PostDto postDto = mapper.map(post, PostDto.class);
 //        PostDto postDto = new PostDto();
 //        postDto.setId(post.getId());
 //        postDto.setTitle(post.getTitle());
